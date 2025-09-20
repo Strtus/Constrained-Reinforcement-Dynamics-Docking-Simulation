@@ -8,6 +8,10 @@ import math
 import random
 import os
 import time
+import sys
+import json
+import numpy as np
+import matplotlib.pyplot as plt
 class SimpleQianfanTrainer:
     """简化的千帆卫星训练器"""
     def __init__(self):
@@ -171,11 +175,42 @@ class SimpleQianfanTrainer:
         print(f"   成功任务: {successful_episodes}/{self.episodes}")
         print(f"   总训练时间: {final_time:.1f} 秒")
         print(f"   平均对接时间: {total_steps/self.episodes:.1f} 秒")
-        print(f"\n千帆卫星训练完成！")
-        print(f"   最终成功率: {successful_episodes/self.episodes*100:.1f}%")
-        print(f"   成功任务: {successful_episodes}/{self.episodes}")
-        print(f"   总训练时间: {final_time:.1f} 秒")
-        print(f"   平均对接时间: {total_steps/self.episodes:.1f} 秒")
+        
+        # 使用高质量可视化脚本展示结果
+        self.generate_professional_visualization()
+    
+    def generate_professional_visualization(self):
+        """使用高质量专业可视化脚本"""
+        print("\n正在生成顶刊水准可视化分析...")
+        
+        # 执行专业可视化脚本
+        visualization_script = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+            'professional_visualization.py'
+        )
+        
+        # 创建可视化输出目录
+        viz_output_dir = 'analysis_results'
+        os.makedirs(viz_output_dir, exist_ok=True)
+        
+        # 执行专业可视化脚本
+        import subprocess
+        cmd = f"cd {os.path.dirname(os.path.dirname(os.path.abspath(__file__)))} && python professional_visualization.py"
+        
+        print(f"执行顶刊水准专业可视化...")
+        try:
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            if result.returncode == 0:
+                print("✅ 专业可视化生成成功！")
+                print("📊 检查 analysis_results/ 目录查看顶刊水准图表")
+                print("   - professional_learning_curves.png")
+                print("   - professional_performance_metrics.png") 
+                print("   - professional_3d_trajectory.png")
+                print("   - professional_dashboard.png")
+            else:
+                print(f"可视化执行遇到问题: {result.stderr}")
+        except Exception as e:
+            print(f"可视化执行失败: {e}")
 
 def main():
     """主函数"""

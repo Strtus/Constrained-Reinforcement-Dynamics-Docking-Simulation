@@ -176,14 +176,14 @@ class SimpleQianfanTrainer:
         print(f"   总训练时间: {final_time:.1f} 秒")
         print(f"   平均对接时间: {total_steps/self.episodes:.1f} 秒")
         
-        # 使用高质量可视化脚本展示结果
-        self.generate_professional_visualization()
+    # 运行可视化脚本展示结果（中性表述）
+    self.generate_professional_visualization()
     
     def generate_professional_visualization(self):
-        """使用高质量专业可视化脚本"""
-        print("\n正在生成顶刊水准可视化分析...")
+        """运行可视化脚本生成分析图表"""
+        print("\n正在生成可视化分析图表...")
         
-        # 执行专业可视化脚本
+    # 执行可视化脚本
         visualization_script = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
             'professional_visualization.py'
@@ -193,16 +193,16 @@ class SimpleQianfanTrainer:
         viz_output_dir = 'analysis_results'
         os.makedirs(viz_output_dir, exist_ok=True)
         
-        # 执行专业可视化脚本
+    # 执行可视化脚本
         import subprocess
         cmd = f"cd {os.path.dirname(os.path.dirname(os.path.abspath(__file__)))} && python professional_visualization.py"
         
-        print(f"执行顶刊水准专业可视化...")
+    print(f"执行可视化脚本...")
         try:
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
             if result.returncode == 0:
-                print("✅ 专业可视化生成成功！")
-                print("📊 检查 analysis_results/ 目录查看顶刊水准图表")
+                print("可视化生成成功。")
+                print("在 analysis_results/ 目录查看输出图表：")
                 print("   - professional_learning_curves.png")
                 print("   - professional_performance_metrics.png") 
                 print("   - professional_3d_trajectory.png")

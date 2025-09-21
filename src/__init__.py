@@ -15,12 +15,15 @@ __version__ = "1.0.0"
 __author__ = "SafeRL Team"
 __license__ = "MIT"
 
-from .environment import SpacecraftDockingEnv
+# Export the updated environment class; keep a backward-compatible alias
+from .environment import SpacecraftRvDEnvironment as SpacecraftDockingEnv
+from .environment import SpacecraftRvDEnvironment
 from .agent import GRPOAgent
 from .simulator import SpacecraftSimulator
 
 __all__ = [
     "SpacecraftDockingEnv",
+    "SpacecraftRvDEnvironment",
     "GRPOAgent", 
     "SpacecraftSimulator"
 ]

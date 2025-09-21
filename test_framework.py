@@ -41,9 +41,9 @@ class TestFrameworkComponents(unittest.TestCase):
             env = SpacecraftDockingEnvironment(**self.test_config)
             self.assertIsNotNone(env.observation_space)
             self.assertIsNotNone(env.action_space)
-            print("✓ Environment initialization test passed")
+            print("[OK] Environment initialization test passed")
         except ImportError:
-            print("⚠ Environment module not available for testing")
+            print("[WARN] Environment module not available for testing")
     
     def test_agent_initialization(self):
         """Test agent can be initialized."""
@@ -63,9 +63,9 @@ class TestFrameworkComponents(unittest.TestCase):
                 learning_rate=1e-3
             )
             self.assertIsNotNone(agent)
-            print("✓ Agent initialization test passed")
+            print("[OK] Agent initialization test passed")
         except ImportError:
-            print("⚠ Agent module not available for testing")
+            print("[WARN] Agent module not available for testing")
     
     def test_simulator_initialization(self):
         """Test simulator can be initialized."""
@@ -73,9 +73,9 @@ class TestFrameworkComponents(unittest.TestCase):
             from simulator import SpacecraftSimulator
             sim = SpacecraftSimulator()
             self.assertIsNotNone(sim)
-            print("✓ Simulator initialization test passed")
+            print("[OK] Simulator initialization test passed")
         except ImportError:
-            print("⚠ Simulator module not available for testing")
+            print("[WARN] Simulator module not available for testing")
     
     def test_orbital_mechanics_calculations(self):
         """Test orbital mechanics calculations."""
@@ -91,9 +91,9 @@ class TestFrameworkComponents(unittest.TestCase):
             
             derivatives = om.hill_clohessy_wiltshire_full(0.0, state, control)
             self.assertEqual(len(derivatives), 6)
-            print("✓ Orbital mechanics test passed")
+            print("[OK] Orbital mechanics test passed")
         except ImportError:
-            print("⚠ Orbital mechanics module not available for testing")
+            print("[WARN] Orbital mechanics module not available for testing")
     
     def test_safety_constraints(self):
         """Test safety constraint evaluation."""
@@ -109,9 +109,9 @@ class TestFrameworkComponents(unittest.TestCase):
             
             self.assertIsInstance(constraints, dict)
             self.assertIn('velocity_constraint', constraints)
-            print("✓ Safety constraints test passed")
+            print("[OK] Safety constraints test passed")
         except ImportError:
-            print("⚠ Safety constraints module not available for testing")
+            print("[WARN] Safety constraints module not available for testing")
     
     def test_attitude_dynamics(self):
         """Test attitude dynamics calculations."""
@@ -127,9 +127,9 @@ class TestFrameworkComponents(unittest.TestCase):
             
             # Check normalization
             self.assertAlmostEqual(np.linalg.norm(q_norm), 1.0, places=6)
-            print("✓ Attitude dynamics test passed")
+            print("[OK] Attitude dynamics test passed")
         except ImportError:
-            print("⚠ Attitude dynamics module not available for testing")
+            print("[WARN] Attitude dynamics module not available for testing")
     
     def test_configuration_loading(self):
         """Test configuration system."""
@@ -140,9 +140,9 @@ class TestFrameworkComponents(unittest.TestCase):
             self.assertIsInstance(config, dict)
             self.assertIn('environment', config)
             self.assertIn('agent', config)
-            print("✓ Configuration loading test passed")
+            print("[OK] Configuration loading test passed")
         except ImportError:
-            print("⚠ Configuration module not available for testing")
+            print("[WARN] Configuration module not available for testing")
 
 
 class TestMathematicalModels(unittest.TestCase):
@@ -158,9 +158,9 @@ class TestMathematicalModels(unittest.TestCase):
             magnitude = np.linalg.norm(vector)
             
             self.assertAlmostEqual(magnitude, np.sqrt(14), places=6)
-            print("✓ Coordinate transformation test passed")
+            print("[OK] Coordinate transformation test passed")
         except ImportError:
-            print("⚠ NumPy not available for testing")
+            print("[WARN] NumPy not available for testing")
     
     def test_physics_calculations(self):
         """Test physics calculations."""
@@ -174,9 +174,9 @@ class TestMathematicalModels(unittest.TestCase):
             
             expected_force = np.array([50.0, 0.0, 0.0])
             np.testing.assert_array_almost_equal(force, expected_force)
-            print("✓ Physics calculations test passed")
+            print("[OK] Physics calculations test passed")
         except ImportError:
-            print("⚠ NumPy not available for testing")
+            print("[WARN] NumPy not available for testing")
 
 
 class TestFrameworkIntegration(unittest.TestCase):
@@ -186,9 +186,9 @@ class TestFrameworkIntegration(unittest.TestCase):
         """Test basic framework workflow."""
         try:
             # This would test a complete workflow if all dependencies are available
-            print("✓ Basic workflow structure verified")
+            print("[OK] Basic workflow structure verified")
         except Exception as e:
-            print(f"⚠ Workflow test skipped: {e}")
+            print(f"[WARN] Workflow test skipped: {e}")
     
     def test_error_handling(self):
         """Test error handling mechanisms."""
@@ -198,9 +198,9 @@ class TestFrameworkIntegration(unittest.TestCase):
                 # This should fail gracefully
                 import nonexistent_module
                 nonexistent_module.some_function()
-            print("✓ Error handling test passed")
+            print("[OK] Error handling test passed")
         except AssertionError:
-            print("✓ Error handling test passed (no error raised as expected)")
+            print("[OK] Error handling test passed (no error raised as expected)")
 
 
 def run_performance_benchmarks():
@@ -244,9 +244,9 @@ def check_system_requirements():
     print(f"Python version: {python_version.major}.{python_version.minor}.{python_version.micro}")
     
     if python_version >= (3, 8):
-        print("✓ Python version requirement satisfied")
+        print("[OK] Python version requirement satisfied")
     else:
-        print("✗ Python 3.8+ required")
+        print("[FAIL] Python 3.8+ required")
     
     # Memory check
     try:
@@ -255,9 +255,9 @@ def check_system_requirements():
         print(f"Available memory: {memory.available / (1024**3):.1f} GB")
         
         if memory.available > 4 * (1024**3):  # 4 GB
-            print("✓ Memory requirement satisfied")
+            print("[OK] Memory requirement satisfied")
         else:
-            print("⚠ Low memory (recommend 4+ GB)")
+            print("[WARN] Low memory (recommend 4+ GB)")
     except ImportError:
         print("psutil not available for memory check")
     
@@ -268,16 +268,16 @@ def check_system_requirements():
         print(f"CPU cores: {cpu_count}")
         
         if cpu_count >= 4:
-            print("✓ CPU requirement satisfied")
+            print("[OK] CPU requirement satisfied")
         else:
-            print("⚠ Multiple CPU cores recommended")
+            print("[WARN] Multiple CPU cores recommended")
     except:
         print("CPU information not available")
 
 
 def main():
     """Main test execution function."""
-    print("Spacecraft Safe RL Framework - Professional Test Suite")
+    print("Spacecraft Safe RL Framework - Test Suite")
     print("=" * 60)
     
     # Check system requirements
@@ -321,10 +321,10 @@ def main():
     
     # Overall status
     if len(result.failures) == 0 and len(result.errors) == 0:
-        print("\n✓ All tests passed successfully!")
+        print("\nAll tests passed.")
         return True
     else:
-        print("\n⚠ Some tests failed (likely due to missing dependencies)")
+        print("\nSome tests failed (likely due to missing dependencies)")
         return False
 
 

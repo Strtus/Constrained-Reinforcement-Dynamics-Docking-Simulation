@@ -18,8 +18,12 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 import time
 from collections import defaultdict, deque
-import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import matplotlib.pyplot as plt  # optional
+    import seaborn as sns  # optional
+except Exception:
+    plt = None
+    sns = None
 from scipy import stats
 from concurrent.futures import ProcessPoolExecutor
 import warnings
@@ -126,7 +130,6 @@ class PerformanceAnalyzer:
         
     def analyze_episode(self, episode_data: Dict[str, Any]) -> Dict[str, float]:
         """Analyze single episode performance"""
-        
         trajectory = episode_data['trajectory']
         info = episode_data['info']
         
@@ -138,8 +141,20 @@ class PerformanceAnalyzer:
         actions = np.array([step['action'] for step in trajectory])
         
         # Mission success analysis
-        final_distance = np.linalg.norm(positions[-1])
-        final_velocity = np.linalg.norm(velocities[-1])
+        # Support both vector and scalar trajectories (when only magnitudes are logged)
+        if positions.ndim == 2:
+            final_distance = np.linalg.norm(positions[-1])
+            distances = np.linalg.norm(positions, axis=1)
+        else:
+            final_distance = float(np.abs(positions[-1]))
+            distances = np.abs(positions)
+
+        if velocities.ndim == 2:
+            final_velocity = np.linalg.norm(velocities[-1])
+            speeds = np.linalg.norm(velocities, axis=1)
+        else:
+            final_velocity = float(np.abs(velocities[-1]))
+            speeds = np.abs(velocities)
         
         metrics['success'] = info.get('termination_reason') == 'docking_success'
         metrics['final_distance'] = final_distance
@@ -147,8 +162,7 @@ class PerformanceAnalyzer:
         metrics['episode_length'] = len(trajectory)
         
         # Safety analysis
-        distances = np.linalg.norm(positions, axis=1)
-        speeds = np.linalg.norm(velocities, axis=1)
+        # distances and speeds computed above
         
         metrics['min_distance'] = np.min(distances)
         metrics['max_velocity'] = np.max(speeds)
@@ -156,8 +170,8 @@ class PerformanceAnalyzer:
         metrics['unsafe_approach'] = np.any((distances < 1.0) & (speeds > 0.5))
         
         # Control effort analysis
-        thrust_magnitudes = np.linalg.norm(actions[:, :3], axis=1)
-        torque_magnitudes = np.linalg.norm(actions[:, 3:], axis=1)
+        thrust_magnitudes = np.linalg.norm(actions[:, :3], axis=1) if actions.ndim == 2 else np.array([0.0])
+        torque_magnitudes = np.linalg.norm(actions[:, 3:], axis=1) if actions.ndim == 2 else np.array([0.0])
         
         metrics['total_thrust_effort'] = np.sum(thrust_magnitudes)
         metrics['total_torque_effort'] = np.sum(torque_magnitudes)
@@ -180,7 +194,7 @@ class PerformanceAnalyzer:
         action_derivatives = np.diff(actions, axis=0)
         smoothness = 1.0 / (1.0 + np.mean(np.linalg.norm(action_derivatives, axis=1)))
         
-        return smoothness
+        return float(smoothness)
     
     def _calculate_approach_efficiency(self, positions: np.ndarray) -> float:
         """Calculate approach efficiency (straight-line vs actual path)"""
@@ -195,7 +209,7 @@ class PerformanceAnalyzer:
         else:
             efficiency = 0.0
         
-        return efficiency
+        return float(efficiency)
     
     def _calculate_trajectory_length(self, positions: np.ndarray) -> float:
         """Calculate total trajectory length"""
@@ -205,7 +219,7 @@ class PerformanceAnalyzer:
         path_segments = np.diff(positions, axis=0)
         segment_lengths = np.linalg.norm(path_segments, axis=1)
         
-        return np.sum(segment_lengths)
+        return float(np.sum(segment_lengths))
     
     def analyze_batch_performance(self, episode_batch: List[Dict]) -> EvaluationMetrics:
         """Analyze performance across multiple episodes"""
@@ -213,62 +227,65 @@ class PerformanceAnalyzer:
         batch_metrics = [self.analyze_episode(episode) for episode in episode_batch]
         
         # Aggregate metrics
-        success_rate = np.mean([m['success'] for m in batch_metrics])
+        success_rate = float(np.mean([bool(m['success']) for m in batch_metrics]))
         
         # Filter successful episodes for accuracy analysis
         successful_episodes = [m for m in batch_metrics if m['success']]
         
         if successful_episodes:
             docking_accuracies = [m['final_distance'] for m in successful_episodes]
-            docking_accuracy_mean = np.mean(docking_accuracies)
-            docking_accuracy_std = np.std(docking_accuracies)
+            docking_accuracy_mean = float(np.mean(docking_accuracies))
+            docking_accuracy_std = float(np.std(docking_accuracies))
             
             episode_lengths = [m['episode_length'] for m in successful_episodes]
-            time_to_dock_mean = np.mean(episode_lengths)
-            time_to_dock_std = np.std(episode_lengths)
+            time_to_dock_mean = float(np.mean(episode_lengths))
+            time_to_dock_std = float(np.std(episode_lengths))
         else:
             docking_accuracy_mean = docking_accuracy_std = 0.0
             time_to_dock_mean = time_to_dock_std = 0.0
         
         # Safety metrics
-        collision_rate = np.mean([m['collision'] for m in batch_metrics])
-        unsafe_approach_rate = np.mean([m['unsafe_approach'] for m in batch_metrics])
-        max_velocity = np.max([m['max_velocity'] for m in batch_metrics])
+        collision_rate = float(np.mean([bool(m['collision']) for m in batch_metrics]))
+        unsafe_approach_rate = float(np.mean([bool(m['unsafe_approach']) for m in batch_metrics]))
+        max_velocity = float(np.max([m['max_velocity'] for m in batch_metrics]))
         
         # Efficiency metrics
         fuel_consumptions = [1.0 - m['fuel_consumption'] for m in batch_metrics]
-        fuel_consumption_mean = np.mean(fuel_consumptions)
-        fuel_consumption_std = np.std(fuel_consumptions)
+        fuel_consumption_mean = float(np.mean(fuel_consumptions))
+        fuel_consumption_std = float(np.std(fuel_consumptions))
         
         control_efforts = [m['total_thrust_effort'] + m['total_torque_effort'] 
                           for m in batch_metrics]
-        control_effort_mean = np.mean(control_efforts)
+        control_effort_mean = float(np.mean(control_efforts))
         
-        trajectory_smoothness = np.mean([m['control_smoothness'] for m in batch_metrics])
+        trajectory_smoothness = float(np.mean([m['control_smoothness'] for m in batch_metrics]))
         
         # Statistical analysis
         n = len(batch_metrics)
         if n > 1:
-            confidence_interval = stats.t.interval(0.95, n-1, 
-                                                  loc=success_rate, 
-                                                  scale=stats.sem([m['success'] for m in batch_metrics]))
+            ci_low, ci_high = stats.t.interval(
+                0.95, n - 1,
+                loc=success_rate,
+                scale=stats.sem([float(m['success']) for m in batch_metrics])
+            )
+            confidence_interval = (float(ci_low), float(ci_high)) if ci_low is not None and ci_high is not None else (0.0, 0.0)
         else:
             confidence_interval = (0.0, 0.0)
         
         return EvaluationMetrics(
-            success_rate=success_rate,
-            docking_accuracy_mean=docking_accuracy_mean,
-            docking_accuracy_std=docking_accuracy_std,
-            time_to_dock_mean=time_to_dock_mean,
-            time_to_dock_std=time_to_dock_std,
-            collision_rate=collision_rate,
-            constraint_violation_rate=unsafe_approach_rate,
-            max_approach_velocity=max_velocity,
-            fuel_consumption_mean=fuel_consumption_mean,
-            fuel_consumption_std=fuel_consumption_std,
-            control_effort_mean=control_effort_mean,
-            trajectory_smoothness=trajectory_smoothness,
-            confidence_interval_95=confidence_interval
+            success_rate=float(success_rate),
+            docking_accuracy_mean=float(docking_accuracy_mean),
+            docking_accuracy_std=float(docking_accuracy_std),
+            time_to_dock_mean=float(time_to_dock_mean),
+            time_to_dock_std=float(time_to_dock_std),
+            collision_rate=float(collision_rate),
+            constraint_violation_rate=float(unsafe_approach_rate),
+            max_approach_velocity=float(max_velocity),
+            fuel_consumption_mean=float(fuel_consumption_mean),
+            fuel_consumption_std=float(fuel_consumption_std),
+            control_effort_mean=float(control_effort_mean),
+            trajectory_smoothness=float(trajectory_smoothness),
+            confidence_interval_95=(float(confidence_interval[0]), float(confidence_interval[1]))
         )
 
 
@@ -530,10 +547,12 @@ class TrainingPipeline:
     def run_training_episode(self, env, agent) -> Dict[str, Any]:
         """Run single training episode"""
         
-        state = env.reset()
+        rs = env.reset()
+        state = rs[0] if isinstance(rs, tuple) else rs
         episode_reward = 0.0
         episode_steps = 0
         trajectory = []
+        info: Dict[str, Any] = {}
         
         done = False
         while not done and episode_steps < self.config.max_episode_steps:
@@ -589,7 +608,8 @@ class TrainingPipeline:
         evaluation_episodes = []
         
         for eval_ep in range(self.config.evaluation_episodes):
-            state = env.reset()
+            rs = env.reset()
+            state = rs[0] if isinstance(rs, tuple) else rs
             episode_data = {
                 'trajectory': [],
                 'info': {}
@@ -709,6 +729,16 @@ class TrainingPipeline:
     def plot_training_curves(self, save_path: Optional[str] = None):
         """Generate training curve plots"""
         
+        # Lazy import in case matplotlib/seaborn are not installed in minimal setups
+        global plt, sns
+        if plt is None or sns is None:
+            try:
+                import matplotlib.pyplot as plt  # type: ignore
+                import seaborn as sns  # type: ignore
+            except Exception:
+                logger.warning("Matplotlib/Seaborn not available; skipping plot generation")
+                return
+
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         
         # Reward curve

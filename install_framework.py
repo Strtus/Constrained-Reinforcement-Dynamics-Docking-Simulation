@@ -15,7 +15,7 @@ import platform
 
 
 class FrameworkInstaller:
-    """Professional installation manager for the spacecraft framework."""
+    """Installation manager for the spacecraft framework."""
     
     def __init__(self):
         self.python_executable = sys.executable
@@ -124,16 +124,16 @@ class FrameworkInstaller:
         for module in critical_imports:
             try:
                 __import__(module)
-                print(f"✓ {module}")
+                print(f"[OK] {module}")
             except ImportError:
-                print(f"✗ {module}")
+                print(f"[FAIL] {module}")
                 failed_imports.append(module)
         
         if failed_imports:
             print(f"\nFailed to import: {', '.join(failed_imports)}")
             return False
         
-        print("\nAll critical components verified successfully")
+        print("\nAll critical components verified")
         return True
     
     def create_example_config(self):

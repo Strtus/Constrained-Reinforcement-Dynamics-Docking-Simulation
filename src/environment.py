@@ -348,7 +348,7 @@ class SafetyConstraints:
 
 class SpacecraftRvDEnvironment(gym.Env):
     """
-    Professional Spacecraft Rendezvous and Docking Environment
+    Spacecraft Rendezvous and Docking Environment
     
     Implements high-fidelity 6DOF dynamics with:
     - Hill-Clohessy-Wiltshire relative orbital mechanics

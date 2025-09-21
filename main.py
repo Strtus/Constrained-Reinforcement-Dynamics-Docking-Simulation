@@ -65,7 +65,7 @@ class SpacecraftMissionController:
         self.logger.info("Mission controller initialized")
     
     def setup_logging(self):
-        """Configure professional logging system."""
+        """Configure logging system."""
         log_level = self.config.get('log_level', 'INFO')
         log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         
@@ -233,7 +233,7 @@ def create_default_config() -> Dict[str, Any]:
 def main():
     """Main execution function."""
     parser = argparse.ArgumentParser(
-        description='Spacecraft Safe RL Framework - Professional Implementation'
+        description='Spacecraft Safe RL Framework'
     )
     
     parser.add_argument(

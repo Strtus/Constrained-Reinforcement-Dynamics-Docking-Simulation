@@ -65,8 +65,8 @@ def generate_realistic_training_data():
     
     return training_data
 
-def create_professional_visualizations(training_data):
-    """Create academic-grade visualizations for training analysis"""
+def create_training_visualizations(training_data):
+    """Create visualizations for training analysis"""
     
     # Create output directory
     os.makedirs('analysis_results', exist_ok=True)
@@ -76,7 +76,7 @@ def create_professional_visualizations(training_data):
     avg_steps = [d['avg_steps'] for d in training_data]
     elapsed_times = [d['elapsed_time'] for d in training_data]
     
-    # Set professional style
+    # Set plotting style
     plt.style.use('seaborn-v0_8')
     colors = {
         'primary': '#2E86AB',
@@ -131,7 +131,7 @@ def create_professional_visualizations(training_data):
     
     plt.savefig('analysis_results/learning_curves.png', 
                dpi=300, bbox_inches='tight', facecolor='white')
-    print("Learning curves saved: analysis_results/learning_curves.png")
+    print("Saved: analysis_results/learning_curves.png")
     plt.show()
     
     # 2. Performance Metrics Dashboard
@@ -202,12 +202,12 @@ def create_professional_visualizations(training_data):
     
     plt.savefig('analysis_results/performance_metrics.png', 
                dpi=300, bbox_inches='tight', facecolor='white')
-    print("Performance metrics saved: analysis_results/performance_metrics.png")
+    print("Saved: analysis_results/performance_metrics.png")
     plt.show()
     
     # 3. Technical Report
     print("\n" + "="*70)
-    print("SPACECRAFT DOCKING TRAINING TECHNICAL REPORT")
+    print("SPACECRAFT DOCKING TRAINING REPORT")
     print("="*70)
     
     final_success_rate = training_data[-1]['success_rate']
@@ -248,14 +248,14 @@ def create_professional_visualizations(training_data):
     # Algorithm assessment
     print(f"\nALGORITHM PERFORMANCE ASSESSMENT:")
     if final_success_rate >= 95:
-        print(f"   Status: EXCELLENT - Ready for operational deployment")
-        print(f"   Recommendation: Deploy to mission-critical applications")
+        print(f"   Status: High performance")
+        print(f"   Recommendation: Proceed with extended validation")
     elif final_success_rate >= 80:
-        print(f"   Status: GOOD - Suitable for testing and validation")
-        print(f"   Recommendation: Extended testing before full deployment")
+        print(f"   Status: Moderate performance")
+        print(f"   Recommendation: Additional testing recommended")
     else:
-        print(f"   Status: DEVELOPING - Requires additional training")
-        print(f"   Recommendation: Continue training with parameter optimization")
+        print(f"   Status: Under development")
+        print(f"   Recommendation: Continue training and tune parameters")
     
     print("\n" + "="*70)
     print(f"Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -284,7 +284,11 @@ def main():
     
     # Create visualizations
     print("\nGenerating visualization plots...")
-    create_professional_visualizations(training_data)
+    create_training_visualizations(training_data)
+
+def create_professional_visualizations(training_data):
+    """Backward-compatibility alias; prefer create_training_visualizations."""
+    return create_training_visualizations(training_data)
     
     print("\nAnalysis complete. Output files saved in analysis_results/")
     return training_data

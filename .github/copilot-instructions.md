@@ -1,12 +1,12 @@
 # AI Agent Instructions for CReDyS Framework
 
 ## Project Overview
-CReDyS (Constrained Reinforcement Dynamics Docking Simulation) is a professional aerospace simulation framework for spacecraft rendezvous and docking using **Guided Reward Policy Optimization (GRPO)** with safety constraints. This is NOT a toy project - it implements production-grade orbital mechanics, quaternion attitude dynamics, and constrained reinforcement learning.
+CReDyS (Constrained Reinforcement Dynamics Docking Simulation) is an aerospace simulation framework for spacecraft rendezvous and docking using **Guided Reward Policy Optimization (GRPO)** with safety constraints. It implements orbital mechanics, quaternion attitude dynamics, and constrained reinforcement learning.
 
 ## Architecture Fundamentals
 
 ### Core Component Structure
-- **`main.py`**: Mission controller orchestrating all components with professional logging and error handling
+- **`main.py`**: Mission controller orchestrating all components with structured logging and error handling
 - **`src/environment.py`**: High-fidelity 6DOF spacecraft environment implementing Hill-Clohessy-Wiltshire equations and quaternion dynamics
 - **`src/agent.py`**: Advanced GRPO agent with safety-aware neural networks, attention mechanisms, and Lagrangian multipliers
 - **`src/simulator.py`**: Physics-accurate spacecraft dynamics with fault modeling and thruster allocation

@@ -11,7 +11,6 @@ import time
 import sys
 import json
 import numpy as np
-import matplotlib.pyplot as plt
 class SimpleQianfanTrainer:
     """简化的千帆卫星训练器"""
     def __init__(self):
@@ -170,47 +169,55 @@ class SimpleQianfanTrainer:
                 }
                 self.save_training_progress(progress_data)
         final_time = time.time() - start_time
-        print(f"\n千帆卫星训练完成！")
+        print(f"\n千帆卫星训练完成。")
         print(f"   最终成功率: {successful_episodes/self.episodes*100:.1f}%")
         print(f"   成功任务: {successful_episodes}/{self.episodes}")
         print(f"   总训练时间: {final_time:.1f} 秒")
         print(f"   平均对接时间: {total_steps/self.episodes:.1f} 秒")
         
-    # 运行可视化脚本展示结果（中性表述）
-    self.generate_professional_visualization()
-    
-    def generate_professional_visualization(self):
-        """运行可视化脚本生成分析图表"""
-        print("\n正在生成可视化分析图表...")
-        
-    # 执行可视化脚本
-        visualization_script = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
-            'professional_visualization.py'
-        )
-        
-        # 创建可视化输出目录
-        viz_output_dir = 'analysis_results'
-        os.makedirs(viz_output_dir, exist_ok=True)
-        
-    # 执行可视化脚本
-        import subprocess
-        cmd = f"cd {os.path.dirname(os.path.dirname(os.path.abspath(__file__)))} && python professional_visualization.py"
-        
-    print(f"执行可视化脚本...")
+        # 可选：生成可视化图表（中性表述，若脚本缺失则跳过）
         try:
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            if result.returncode == 0:
-                print("可视化生成成功。")
-                print("在 analysis_results/ 目录查看输出图表：")
-                print("   - professional_learning_curves.png")
-                print("   - professional_performance_metrics.png") 
-                print("   - professional_3d_trajectory.png")
-                print("   - professional_dashboard.png")
-            else:
-                print(f"可视化执行遇到问题: {result.stderr}")
-        except Exception as e:
-            print(f"可视化执行失败: {e}")
+            self.generate_visualization()
+        except Exception as _:
+            # 可视化非关键路径，出错时静默跳过
+            pass
+
+    # 兼容旧名：保留旧方法名，内部调用新实现
+    def generate_professional_visualization(self):
+        return self.generate_visualization()
+
+    def generate_visualization(self):
+        """运行可视化脚本生成分析图表（中性表述，无夸张用语）"""
+        print("\n生成可视化图表...")
+
+        # 可视化脚本路径（若存在则调用）
+        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        candidate_scripts = [
+            os.path.join(repo_root, 'analysis', 'qianfan_visualization.py'),
+            os.path.join(repo_root, 'analysis', 'visualization.py'),
+            os.path.join(repo_root, 'professional_visualization.py'),  # 兼容历史文件名
+        ]
+
+        # 输出目录
+        viz_output_dir = os.path.join(repo_root, 'analysis_results')
+        os.makedirs(viz_output_dir, exist_ok=True)
+
+        # 查找并调用首个存在的脚本
+        script_to_run = next((p for p in candidate_scripts if os.path.exists(p)), None)
+        if not script_to_run:
+            print("未找到可视化脚本，已跳过。")
+            return
+
+        import subprocess
+        cmd = f"cd {repo_root} && python {os.path.relpath(script_to_run, repo_root)}"
+        print("执行可视化脚本...")
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            print("可视化已生成。输出位于 analysis_results/ 目录。")
+        else:
+            # 打印简要错误信息，保持中性
+            stderr = (result.stderr or '').splitlines()[-1] if result.stderr else 'unknown error'
+            print(f"可视化执行失败：{stderr}")
 
 def main():
     """主函数"""

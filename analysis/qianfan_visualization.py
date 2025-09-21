@@ -153,7 +153,7 @@ class QianfanVisualizationSuite:
         sphere_z = sphere_radius * np.outer(np.ones(np.size(u)), np.cos(v))
         ax.plot_surface(sphere_x, sphere_y, sphere_z, alpha=0.2, color='gold')
         
-        # Professional formatting
+    # Plot formatting
         ax.set_xlabel('Radial Distance (m)', fontweight='bold')
         ax.set_ylabel('Along-track Distance (m)', fontweight='bold')
         ax.set_zlabel('Cross-track Distance (m)', fontweight='bold')
